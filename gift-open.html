@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あなたにプレゼントが届いています</title>
+<style>
+  :root {
+    --red: #E8324A;
+    --red-dark: #C41F35;
+    --pink-light: #FFF0F2;
+    --pink-mid: #FDDDE2;
+    --text: #1a1a1a;
+    --font: 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: #fdf6f7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: var(--text);
+  }
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 1px solid var(--pink-mid);
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(232,50,74,0.08);
+  }
+  .icon-gift { font-size: 3.5rem; margin-bottom: 0.5rem; animation: bounce 2s infinite; }
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-12px); }
+    60% { transform: translateY(-6px); }
+  }
+  h1 { font-size: 1.35rem; color: var(--red-dark); font-weight: 700; margin-bottom: 1.5rem; }
+  
+  .gift-image-wrap { margin-bottom: 1.5rem; }
+  #gift-img {
+    max-width: 140px;
+    max-height: 140px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid var(--pink-mid);
+    padding: 6px;
+    background: #fafafa;
+  }
+  
+  #msg-area {
+    background: var(--pink-light);
+    border-radius: 12px;
+    padding: 1.2rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #444;
+    text-align: left;
+    margin-bottom: 1.8rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    border-left: 4px solid var(--red);
+  }
+  
+  #dl-btn {
+    display: inline-block;
+    width: 100%;
+    padding: 15px;
+    background: var(--red);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 16px rgba(232,50,74,0.25);
+    transition: background 0.2s, transform 0.1s;
+  }
+  #dl-btn:hover { background: var(--red-dark); }
+  #dl-btn:active { transform: scale(0.98); }
+  
+  #error-msg { display: none; color: var(--red-dark); font-weight: bold; font-size: 0.95rem; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div id="content-wrap">
+    <div class="icon-gift">🎁</div>
+    <h1>プレゼントが届きました！</h1>
+    
+    <div class="gift-image-wrap">
+      <img id="gift-img" src="" alt="プレゼントイラスト" style="display:none;">
+    </div>
+    
+    <div id="msg-area" style="display:none;"></div>
+    
+    <a id="dl-btn" href="#" target="_blank">✨ 受け取る (ダウンロード)</a>
+  </div>
+  
+  <p id="error-msg">⚠️ プレゼントの情報が正しく読み込めませんでした。<br>URLが途中で切れている可能性があります。</p>
+</div>
+
+<script>
+  // URLからパラメータを解析
+  const params = new URLSearchParams(window.location.search);
+  const imgData = params.get('img');
+  const dlUrl = params.get('dl');
+  const msgData = params.get('msg');
+
+  // 必須データ（画像とダウンロード先）があるかチェック
+  if (imgData && dlUrl && dlUrl.startsWith('http')) {
+    // 画像をセット
+    const imgEl = document.getElementById('gift-img');
+    imgEl.src = imgData;
+    imgEl.style.display = 'inline-block';
+    
+    // ダウンロードURLをセット
+    document.getElementById('dl-btn').href = dlUrl;
+    
+    // メッセージがあれば表示
+    if (msgData) {
+      const msgEl = document.getElementById('msg-area');
+      msgEl.textContent = msgData;
+      msgEl.style.display = 'block';
+    }
+  } else {
+    // エラー表示
+    document.getElementById('content-wrap').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
