@@ -57,7 +57,7 @@
   #create-btn:hover:not(:disabled) { background: var(--red-dark); box-shadow: 0 6px 20px rgba(232,50,74,0.32); }
   #create-btn:active:not(:disabled) { transform: scale(0.98); }
   #create-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
-  #error-msg { font-size: 0.82rem; color: var(--red); margin-top: 8px; min-height: 18px; text-align: center; font-weight: bold; }
+  #error-msg { font-size: 0.82rem; color: var(--red); margin-top: 8px; min-height: 18px; text-align: center; font-weight: bold; line-height: 1.4; }
   #result-area { display: none; margin-top: 2rem; background: var(--pink-light); border: 1.5px solid var(--pink-mid); border-radius: var(--radius); padding: 1.5rem; text-align: center; animation: fadeUp 0.5s ease both; }
   @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
   #result-area h2 { font-size: 1rem; font-weight: 700; color: var(--red-dark); margin-bottom: 0.8rem; }
@@ -80,6 +80,7 @@
 </header>
 
 <div class="card">
+  <!-- STEP 1 画像 -->
   <div class="field-block">
     <div class="step">
       <span class="step-num">STEP 1</span>
@@ -90,13 +91,14 @@
       <span id="drop-icon">🖼️</span>
       <p id="drop-text"><b>クリックまたはドラッグ＆ドロップ</b><br>PNG / JPG / WEBP など</p>
     </div>
-    <div id="size-warning">⚠️ URLを短く保つため、画像は小さなアイコンサイズ（最大150px）に自動縮小・圧縮されます。</div>
+    <div id="size-warning">⚠️ URLを短く保つため、画像はコンパクトなサイズ（最大100px）に強力圧縮されます。</div>
     <div id="preview-area">
       <img id="preview-img" src="" alt="プレビュー">
       <button id="remove-img" aria-label="画像を削除">✕</button>
     </div>
   </div>
 
+  <!-- STEP 2 URL -->
   <div class="field-block">
     <div class="step">
       <span class="step-num">STEP 2</span>
@@ -106,6 +108,7 @@
     <p class="url-hint">ギガファイル便・Dropbox・Google Drive などのリンク</p>
   </div>
 
+  <!-- STEP 3 メッセージ -->
   <div class="field-block">
     <div class="step">
       <span class="step-num">STEP 3</span>
@@ -117,6 +120,7 @@
   <button id="create-btn" onclick="createGift()">🎁 プレゼントリンクを生成する</button>
   <p id="error-msg"></p>
 
+  <!-- 結果 -->
   <div id="result-area">
     <h2>✨ リンクが生成されました！</h2>
     <textarea id="result-url" readonly></textarea>
@@ -163,8 +167,7 @@ function loadImage(file) {
     const img = new Image();
     img.onload = function() {
       const canvas = document.createElement('canvas');
-      // URLを壊さないよう、画像をアイコンサイズ(最大150px)に制限
-      const MAX = 150; 
+      const MAX = 100; 
       let w = img.width, h = img.height;
       if (w > MAX || h > MAX) {
         if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
@@ -172,8 +175,7 @@ function loadImage(file) {
       }
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      // 画質を少し下げてさらに文字数をカット
-      imgBase64 = canvas.toDataURL('image/jpeg', 0.6); 
+      imgBase64 = canvas.toDataURL('image/jpeg', 0.4); 
       
       document.getElementById('preview-img').src = imgBase64;
       document.getElementById('preview-area').style.display = 'block';
@@ -195,20 +197,17 @@ function createGift() {
   if (!url.startsWith('http')) { err.textContent = '正しいURLを入力してください（http〜）。'; return; }
   err.textContent = '';
 
-  // ファイル名が変わってもバグらないように相対パスで安全にURL生成
   const base = new URL('gift-open.html', location.href).href;
   const params = new URLSearchParams();
   
-  // URL文字数制限対策のためにデータを圧縮して詰め込む
   params.set('img', imgBase64);
   params.set('dl', url);
   if (msg) params.set('msg', msg);
 
   const giftUrl = base + '?' + params.toString();
 
-  // SNSやブラウザの一般的な限界文字数（約7000文字）を超えていないかチェック
-  if (giftUrl.length > 7000) {
-    err.textContent = 'エラー: メッセージが長すぎるか、画像データの容量が大きいため、URLが制限を超えました。メッセージを短くしてください。';
+  if (giftUrl.length > 8000) {
+    err.textContent = 'エラー: イラストの情報量が多いためURLの制限を超えました。お手数ですが、背景がシンプルな画像に変更するか、メッセージを少し短くしてお試しください。';
     return;
   }
 
