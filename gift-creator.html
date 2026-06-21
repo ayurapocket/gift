@@ -67,7 +67,7 @@
   #preview-link { display: inline-block; margin-top: 10px; font-size: 0.82rem; color: var(--red); text-decoration: none; }
   #preview-link:hover { text-decoration: underline; }
   footer { margin-top: 2rem; font-size: 0.76rem; color: #bbb; text-align: center; }
-  #size-warning { display: none; font-size: 0.78rem; color: #c44100; margin-top: 6px; background: #fff0f0; border: 1px solid #ffcccc; border-radius: 6px; padding: 6px 10px; line-height: 1.4; }
+  #size-warning { display: none; font-size: 0.78rem; color: #2a9d5c; margin-top: 6px; background: #f0fff4; border: 1px solid #ccffdd; border-radius: 6px; padding: 6px 10px; line-height: 1.4; }
 </style>
 </head>
 <body>
@@ -89,7 +89,7 @@
       <span id="drop-icon">🖼️</span>
       <p id="drop-text"><b>クリックまたはドラッグ＆ドロップ</b><br>PNG / JPG / WEBP など</p>
     </div>
-    <div id="size-warning">✨ WEBP限界突破版: 画像は500pxの最高画質に自動最適化されます。</div>
+    <div id="size-warning">✨ WEBP 400px最適化版: 画質とエラー回避のベストバランスに調整されています。</div>
     <div id="preview-area">
       <img id="preview-img" src="" alt="プレビュー">
       <button id="remove-img" aria-label="画像を削除">✕</button>
@@ -162,7 +162,7 @@ function loadImage(file) {
     const img = new Image();
     img.onload = function() {
       const canvas = document.createElement('canvas');
-      const MAX = 500; 
+      const MAX = 400; // 複雑なイラストでもエラーにならないよう400pxに最適化
       let w = img.width, h = img.height;
       if (w > MAX || h > MAX) {
         if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
@@ -175,11 +175,10 @@ function loadImage(file) {
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, w, h);
       
-      // WEBP限界突破版: 高画質・低容量を両立
       try {
-        imgBase64 = canvas.toDataURL('image/webp', 0.85);
+        imgBase64 = canvas.toDataURL('image/webp', 0.82);
         if(!imgBase64.startsWith('data:image/webp')) {
-          imgBase64 = canvas.toDataURL('image/jpeg', 0.75); // WEBP非対応ブラウザ用バックアップ
+          imgBase64 = canvas.toDataURL('image/jpeg', 0.75);
         }
       } catch(e) {
         imgBase64 = canvas.toDataURL('image/jpeg', 0.75);
@@ -215,7 +214,7 @@ function createGift() {
   const giftUrl = base + '?' + params.toString();
 
   if (giftUrl.length > 8500) {
-    err.textContent = 'エラー: イラストの情報量が多いためURLの制限を超えました。WEBPでも収まらないため、背景をシンプルにするかメッセージを短くしてください。';
+    err.textContent = 'エラー: イラストの情報量が非常に多いため制限を超えました。お手数ですがメッセージを短くするか、よりシンプルな画像をお試しください。';
     return;
   }
 
