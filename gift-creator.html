@@ -56,7 +56,6 @@
   #create-btn { width: 100%; padding: 15px; background: var(--red); color: #fff; border: none; border-radius: 999px; font-size: 1rem; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s, box-shadow 0.2s; letter-spacing: 0.04em; margin-top: 0.5rem; box-shadow: 0 4px 16px rgba(232,50,74,0.22); }
   #create-btn:hover:not(:disabled) { background: var(--red-dark); box-shadow: 0 6px 20px rgba(232,50,74,0.32); }
   #create-btn:active:not(:disabled) { transform: scale(0.98); }
-  #create-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
   #error-msg { font-size: 0.82rem; color: var(--red); margin-top: 8px; min-height: 18px; text-align: center; font-weight: bold; line-height: 1.4; }
   #result-area { display: none; margin-top: 2rem; background: var(--pink-light); border: 1.5px solid var(--pink-mid); border-radius: var(--radius); padding: 1.5rem; text-align: center; animation: fadeUp 0.5s ease both; }
   @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
@@ -90,7 +89,7 @@
       <span id="drop-icon">🖼️</span>
       <p id="drop-text"><b>クリックまたはドラッグ＆ドロップ</b><br>PNG / JPG / WEBP など</p>
     </div>
-    <div id="size-warning">⚠️ URLを短く保つため、画像はコンパクトなサイズ（最大100px）に強力圧縮されます。</div>
+    <div id="size-warning">✨ WEBP限界突破版: 画像は500pxの最高画質に自動最適化されます。</div>
     <div id="preview-area">
       <img id="preview-img" src="" alt="プレビュー">
       <button id="remove-img" aria-label="画像を削除">✕</button>
@@ -163,15 +162,28 @@ function loadImage(file) {
     const img = new Image();
     img.onload = function() {
       const canvas = document.createElement('canvas');
-      const MAX = 100; 
+      const MAX = 500; 
       let w = img.width, h = img.height;
       if (w > MAX || h > MAX) {
         if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
         else { w = Math.round(w * MAX / h); h = MAX; }
       }
       canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      imgBase64 = canvas.toDataURL('image/jpeg', 0.4); 
+      
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, w, h);
+      
+      // WEBP限界突破版: 高画質・低容量を両立
+      try {
+        imgBase64 = canvas.toDataURL('image/webp', 0.85);
+        if(!imgBase64.startsWith('data:image/webp')) {
+          imgBase64 = canvas.toDataURL('image/jpeg', 0.75); // WEBP非対応ブラウザ用バックアップ
+        }
+      } catch(e) {
+        imgBase64 = canvas.toDataURL('image/jpeg', 0.75);
+      }
       
       document.getElementById('preview-img').src = imgBase64;
       document.getElementById('preview-area').style.display = 'block';
@@ -202,8 +214,8 @@ function createGift() {
 
   const giftUrl = base + '?' + params.toString();
 
-  if (giftUrl.length > 8000) {
-    err.textContent = 'エラー: イラストの情報量が多いためURLの制限を超えました。お手数ですが、背景がシンプルな画像に変更するか、メッセージを少し短くしてお試しください。';
+  if (giftUrl.length > 8500) {
+    err.textContent = 'エラー: イラストの情報量が多いためURLの制限を超えました。WEBPでも収まらないため、背景をシンプルにするかメッセージを短くしてください。';
     return;
   }
 
