@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>プレゼントを作る</title>
+<title>プレゼントリンク作成</title>
 <style>
   :root {
     --red: #E8324A;
@@ -33,41 +33,30 @@
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
   header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.02em; color: var(--red-dark); }
   header p { font-size: 0.88rem; color: var(--text-muted); margin-top: 4px; }
-  .card { background: #fff; border-radius: var(--radius); border: 1px solid var(--pink-mid); padding: 2rem 2rem 1.8rem; width: 100%; max-width: 480px; box-shadow: 0 4px 24px rgba(232,50,74,0.06); }
+  .card { background: #fff; border-radius: var(--radius); border: 1px solid var(--pink-mid); padding: 2rem; width: 100%; max-width: 480px; box-shadow: 0 4px 24px rgba(232,50,74,0.06); }
   .step { display: flex; align-items: baseline; gap: 10px; margin-bottom: 0.8rem; }
   .step-num { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; color: var(--red); background: var(--pink-light); border: 1px solid var(--pink-mid); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
   .step-label { font-size: 0.95rem; font-weight: 600; color: var(--text); }
   .field-block { margin-bottom: 1.8rem; }
-  #drop-zone { border: 2px dashed var(--pink-mid); border-radius: var(--radius); background: var(--pink-light); padding: 2rem 1rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
-  #drop-zone:hover, #drop-zone.drag-over { border-color: var(--red); background: #fff0f2; }
-  #drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  #drop-icon { font-size: 2.2rem; margin-bottom: 0.5rem; display: block; }
-  #drop-text { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
-  #drop-text b { color: var(--red); font-weight: 600; }
-  #preview-area { display: none; position: relative; margin-top: 1rem; }
-  #preview-img { width: 100%; max-height: 180px; object-fit: contain; background: #fafafa; border-radius: var(--radius-sm); border: 1px solid var(--pink-mid); }
-  #remove-img { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
-  #remove-img:hover { background: rgba(200,0,0,0.8); }
   .url-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: var(--font); color: var(--text); background: #fff; transition: border-color 0.2s; outline: none; }
   .url-input:focus { border-color: var(--red); }
   .url-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; }
-  .msg-textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: var(--font); color: var(--text); background: #fff; resize: vertical; min-height: 72px; outline: none; transition: border-color 0.2s; }
+  .msg-textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: var(--font); color: var(--text); background: #fff; resize: vertical; min-height: 80px; outline: none; transition: border-color 0.2s; }
   .msg-textarea:focus { border-color: var(--red); }
   #create-btn { width: 100%; padding: 15px; background: var(--red); color: #fff; border: none; border-radius: 999px; font-size: 1rem; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s, box-shadow 0.2s; letter-spacing: 0.04em; margin-top: 0.5rem; box-shadow: 0 4px 16px rgba(232,50,74,0.22); }
-  #create-btn:hover:not(:disabled) { background: var(--red-dark); box-shadow: 0 6px 20px rgba(232,50,74,0.32); }
-  #create-btn:active:not(:disabled) { transform: scale(0.98); }
-  #error-msg { font-size: 0.82rem; color: var(--red); margin-top: 8px; min-height: 18px; text-align: center; font-weight: bold; line-height: 1.4; }
+  #create-btn:hover { background: var(--red-dark); box-shadow: 0 6px 20px rgba(232,50,74,0.32); }
+  #create-btn:active { transform: scale(0.98); }
+  #error-msg { font-size: 0.82rem; color: var(--red); margin-top: 8px; min-height: 18px; text-align: center; font-weight: bold; }
   #result-area { display: none; margin-top: 2rem; background: var(--pink-light); border: 1.5px solid var(--pink-mid); border-radius: var(--radius); padding: 1.5rem; text-align: center; animation: fadeUp 0.5s ease both; }
   @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
   #result-area h2 { font-size: 1rem; font-weight: 700; color: var(--red-dark); margin-bottom: 0.8rem; }
-  #result-url { width: 100%; padding: 10px 12px; border: 1.5px solid var(--pink-mid); border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; background: #fff; color: var(--text); word-break: break-all; resize: none; outline: none; min-height: 72px; }
+  #result-url { width: 100%; padding: 10px 12px; border: 1.5px solid var(--pink-mid); border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; background: #fff; color: var(--text); word-break: break-all; resize: none; outline: none; min-height: 60px; }
   #copy-btn { margin-top: 10px; padding: 10px 28px; background: var(--red); color: #fff; border: none; border-radius: 999px; font-size: 0.9rem; font-weight: 600; font-family: var(--font); cursor: pointer; transition: background 0.2s; }
   #copy-btn:hover { background: var(--red-dark); }
   #copy-msg { font-size: 0.8rem; color: #2a9d5c; margin-top: 6px; min-height: 18px; }
   #preview-link { display: inline-block; margin-top: 10px; font-size: 0.82rem; color: var(--red); text-decoration: none; }
   #preview-link:hover { text-decoration: underline; }
   footer { margin-top: 2rem; font-size: 0.76rem; color: #bbb; text-align: center; }
-  #size-warning { display: none; font-size: 0.78rem; color: #2a9d5c; margin-top: 6px; background: #eefbff; border: 1px solid #bce7f7; border-radius: 6px; padding: 6px 10px; line-height: 1.4; }
 </style>
 </head>
 <body>
@@ -75,42 +64,25 @@
 <header>
   <div class="logo-bow">🎀</div>
   <h1>プレゼントを作る</h1>
-  <p>イラストとダウンロードURLを設定して、相手に送るリンクを生成します</p>
+  <p>ダウンロードURLを設定して、相手に送る専用リンクを生成します</p>
 </header>
 
 <div class="card">
   <div class="field-block">
     <div class="step">
       <span class="step-num">STEP 1</span>
-      <span class="step-label">プレゼントの画像を選ぶ</span>
-    </div>
-    <div id="drop-zone">
-      <input type="file" id="img-input" accept="image/*">
-      <span id="drop-icon">🖼️</span>
-      <p id="drop-text"><b>クリックまたはドラッグ＆ドロップ</b><br>PNG / JPG / WEBP など</p>
-    </div>
-    <div id="size-warning">🚀 超・軽量化突破版: 複雑なグラデーション画像もデータ量を極限まで引き締めて書き出します。</div>
-    <div id="preview-area">
-      <img id="preview-img" src="" alt="プレビュー">
-      <button id="remove-img" aria-label="画像を削除">✕</button>
-    </div>
-  </div>
-
-  <div class="field-block">
-    <div class="step">
-      <span class="step-num">STEP 2</span>
       <span class="step-label">ダウンロードURLを貼り付ける</span>
     </div>
-    <input class="url-input" type="url" id="dl-url" placeholder="https://gigafile.nu/xxxxx など">
+    <input class="url-input" type="url" id="dl-url" placeholder="https://xgf.nu/xxxxx など">
     <p class="url-hint">ギガファイル便・Dropbox・Google Drive などのリンク</p>
   </div>
 
   <div class="field-block">
     <div class="step">
-      <span class="step-num">STEP 3</span>
+      <span class="step-num">STEP 2</span>
       <span class="step-label">メッセージを添える（任意）</span>
     </div>
-    <textarea class="msg-textarea" id="msg-text" placeholder="心を込めて描きました！"></textarea>
+    <textarea class="msg-textarea" id="msg-text" placeholder="心を込めて描きました！&#13;&#10;（改行もそのまま表示されます）"></textarea>
   </div>
 
   <button id="create-btn" onclick="createGift()">🎁 プレゼントリンクを生成する</button>
@@ -129,79 +101,11 @@
 <footer>生成されたリンクを相手に送るだけでOK。サーバー不要・データは送信されません。</footer>
 
 <script>
-let imgBase64 = '';
-
-const dropZone = document.getElementById('drop-zone');
-const imgInput = document.getElementById('img-input');
-
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) loadImage(file);
-});
-imgInput.addEventListener('change', () => {
-  if (imgInput.files[0]) loadImage(imgInput.files[0]);
-});
-
-document.getElementById('remove-img').onclick = function(e) {
-  e.stopPropagation();
-  imgBase64 = '';
-  document.getElementById('preview-area').style.display = 'none';
-  document.getElementById('drop-zone').style.display = 'block';
-  document.getElementById('size-warning').style.display = 'none';
-  imgInput.value = '';
-};
-
-function loadImage(file) {
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const raw = e.target.result;
-    const img = new Image();
-    img.onload = function() {
-      const canvas = document.createElement('canvas');
-      // さらにサイズを絞り込み、データ量を安全圏へ強制的に落とし込む調整
-      const MAX = 320; 
-      let w = img.width, h = img.height;
-      if (w > MAX || h > MAX) {
-        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-        else { w = Math.round(w * MAX / h); h = MAX; }
-      }
-      canvas.width = w; canvas.height = h;
-      
-      const ctx = canvas.getContext('2d');
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, w, h);
-      
-      // 圧縮率を極限まで引き締め（URL制限を確実に突破するための設定）
-      try {
-        imgBase64 = canvas.toDataURL('image/webp', 0.45);
-        if(!imgBase64.startsWith('data:image/webp')) {
-          imgBase64 = canvas.toDataURL('image/jpeg', 0.45);
-        }
-      } catch(e) {
-        imgBase64 = canvas.toDataURL('image/jpeg', 0.45);
-      }
-      
-      document.getElementById('preview-img').src = imgBase64;
-      document.getElementById('preview-area').style.display = 'block';
-      document.getElementById('drop-zone').style.display = 'none';
-      document.getElementById('size-warning').style.display = 'block';
-    };
-    img.src = raw;
-  };
-  reader.readAsDataURL(file);
-}
-
 function createGift() {
   const url = document.getElementById('dl-url').value.trim();
   const msg = document.getElementById('msg-text').value.trim();
   const err = document.getElementById('error-msg');
 
-  if (!imgBase64) { err.textContent = '画像を選んでください。'; return; }
   if (!url) { err.textContent = 'ダウンロードURLを入力してください。'; return; }
   if (!url.startsWith('http')) { err.textContent = '正しいURLを入力してください（http〜）。'; return; }
   err.textContent = '';
@@ -209,16 +113,10 @@ function createGift() {
   const base = new URL('gift-open.html', location.href).href;
   const params = new URLSearchParams();
   
-  params.set('img', imgBase64);
   params.set('dl', url);
   if (msg) params.set('msg', msg);
 
   const giftUrl = base + '?' + params.toString();
-
-  if (giftUrl.length > 8500) {
-    err.textContent = 'エラー: イラストの情報量が非常に多いため制限を超えました。お手数ですがメッセージを短くするか、よりシンプルな画像をお試しください。';
-    return;
-  }
 
   document.getElementById('result-url').value = giftUrl;
   document.getElementById('preview-link').href = giftUrl;
